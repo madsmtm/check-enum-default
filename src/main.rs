@@ -57,14 +57,14 @@ fn main() {
 
         // We need to basically re-implement the logic in:
         // https://github.com/llvm/llvm-project/blob/llvmorg-23.1.0/clang/lib/Sema/SemaDecl.cpp#L18121-L18163
-        let enum_variant = if (spec.os == "windows" && spec.env == "msvc") || spec.os == "uefi" {
+        let unsigned_enum_type = if (spec.os == "windows" && spec.env == "msvc") || spec.os == "uefi" {
             TypeKind::Int
         } else if spec.arch == "hexagon" {
             TypeKind::UChar
         } else {
             TypeKind::UInt
         };
-        let signed_enum_variant = if spec.arch == "hexagon" {
+        let signed_enum_type = if spec.arch == "hexagon" {
             TypeKind::SChar
         } else {
             TypeKind::Int
@@ -73,12 +73,12 @@ fn main() {
         let entity = &children[0];
         assert_eq!(entity.get_name().unwrap(), "some_enum");
         let ty = entity.get_enum_underlying_type().unwrap();
-        assert_eq!(ty.get_kind(), enum_variant, "{spec:#?}");
+        assert_eq!(ty.get_kind(), unsigned_enum_type, "{spec:#?}");
 
         let entity = &children[1];
         assert_eq!(entity.get_name().unwrap(), "with_negative_variant");
         let ty = entity.get_enum_underlying_type().unwrap();
-        assert_eq!(ty.get_kind(), signed_enum_variant, "{spec:#?}");
+        assert_eq!(ty.get_kind(), signed_enum_type, "{spec:#?}");
 
         let entity = &children[2];
         assert_eq!(entity.get_name().unwrap(), "explicit");
